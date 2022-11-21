@@ -1,0 +1,196 @@
+---
+title: "Data Visualisation - Final Project: Group 2"
+output: html_document
+date: "2022-11-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Loading the necessary libraries
+
+```{r load-libraries}
+library(tidyverse)
+library(janitor)
+library(here)
+library(skimr)
+library(lubridate)
+library(tidyverse)
+library(lubridate)
+library(janitor)
+library(vroom)
+library(skimr)
+library(sf)
+library(tidyverse)
+library(lubridate)
+library(ggmap)
+library(ggrepel)
+library(gridExtra)
+library(pander)
+library(here)
+library(janitor)
+library(skimr)
+library(leaflet)
+library(tmap)
+library(tmaptools)
+library(hrbrthemes)
+library(mapview)
+library(viridis)
+library(dplyr)
+library(patchwork)
+```
+
+## Loading the data
+
+```{r load-data, warning = FALSE, message = FALSE}
+accident_raw <- read_csv(here("data/dft-road-casualty-statistics-accident-last-5-years.csv")) %>% 
+  clean_names()
+
+casualty_raw <- read_csv(here("data/dft-road-casualty-statistics-casualty-last-5-years.csv")) %>% 
+  clean_names()
+
+vehicle_raw <- read_csv(here("data/dft-road-casualty-statistics-vehicle-last-5-years.csv")) %>% 
+  clean_names()
+
+accident_police_force_raw <- read_csv(here("data/accident_police_force.csv")) %>% 
+  clean_names()
+
+accident_accident_severity_raw <- read_csv(here("data/accident_accident_severity.csv")) %>% 
+  clean_names()
+
+accident_day_of_week_raw <- read_csv(here("data/accident_day_of_week.csv")) %>% 
+  clean_names()
+
+accident_local_authority_district_raw <- read_csv(here("data/accident_local_authority_district.csv")) %>% 
+  clean_names()
+
+accident_local_authority_ons_district_raw <- read_csv(here("data/accident_local_authority_ons_district.csv")) %>%
+  clean_names()
+
+accident_local_authority_highway_raw <- read_csv(here("data/accident_local_authority_highway.csv")) %>%
+  clean_names()
+
+accident_first_road_class_raw <- read_csv(here("data/accident_first_road_class.csv")) %>% 
+  clean_names()
+
+accident_road_type_raw <- read_csv(here("data/accident_road_type.csv")) %>% 
+  clean_names()
+
+accident_junction_detail_raw <- read_csv(here("data/accident_junction_detail.csv")) %>% 
+  clean_names()
+
+accident_second_road_class_raw <- read_csv(here("data/accident_second_road_class.csv")) %>% 
+  clean_names()
+
+accident_pedestrian_crossing_human_control_raw <- read_csv(here("data/accident_pedestrian_crossing_human_control.csv")) %>% 
+  clean_names()
+
+accident_pedestrian_crossing_physical_facilities_raw <- read_csv(here("data/accident_pedestrian_crossing_physical_facilities.csv")) %>% 
+  clean_names()
+
+accident_light_conditions_raw <- read_csv(here("data/accident_light_conditions.csv")) %>% 
+  clean_names()
+
+accident_light_conditions_raw <- read_csv(here("data/accident_weather_conditions.csv")) %>% 
+  clean_names()
+
+accident_road_surface_conditions_raw <- read_csv(here("data/accident_road_surface_conditions.csv")) %>%
+  clean_names()
+
+accident_special_conditions_at_site_raw <- read_csv(here("data/accident_special_conditions_at_site.csv")) %>% 
+  clean_names()
+
+accident_urban_or_rural_area_raw <- read_csv(here("data/accident_urban_or_rural_area.csv")) %>% 
+  clean_names()
+
+accident_did_police_officer_attend_scene_of_accident_raw <- read_csv(here("data/accident_did_police_officer_attend_scene_of_accident.csv")) %>%
+  clean_names()
+
+accident_trunk_road_flag_raw <- read_csv(here("data/accident_trunk_road_flag.csv")) %>% 
+  clean_names()
+
+```
+
+## ICE-ing the data
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r inspect-data, warning = FALSE, message = FALSE}
+skim(accident_raw)
+skim(casualty_raw)
+skim(vehicle_raw)
+```
+
+```{r clean-data, warning = FALSE, message = FALSE}
+# accident_clean <- accident_raw %>% 
+#   filter(is.na(location_easting_osgr) == F & is.na(location_northing_osgr) == F & is.na(longitude) == F & is.na(latitude) == F) %>% 
+#   mutate(accident_year = year(accident_year),
+#          police_force = as.integer(police_force),
+#          accident_severity = factor(accident_severity, levels = c(1, 2, 3)),
+#          number_of_vehicles = as.integer(number_of_vehicles),
+#          number_of_casualties = as.integer(number_of_casualties),
+#          date = as.Date(date, "%m/%d/%Y"),
+#          day_of_week = factor(day_of_week, c(1, 2, 3)),
+#          local_authority_district  = as.character(local_authority_district),
+#          first_road_class = factor(first_road_class),
+#          first_road_number = factor(first_road_number),
+#          road_type = factor(road_type),
+#          junction_control = factor(junction_control),
+#          
+#          )
+
+accident_clean <- accident_raw %>% 
+  filter(is.na(date) == F) %>% 
+  mutate(date = dmy(date))
+
+accident_clean_date <- accident_clean %>%
+  group_by(date) %>% 
+  mutate(accident_count = n()) %>% 
+  select(date, accident_count) %>% 
+  distinct() %>% 
+  arrange(date)
+
+accident_clean_date_severity <- accident_clean %>%
+  group_by(date, accident_severity) %>% 
+  mutate(accident_count = n()) %>% 
+  select(date, accident_count, accident_severity) %>% 
+  distinct() %>% 
+  arrange(date)
+  
+```
+
+```{r plot-1-2}
+
+plot_1 <- ggplot(data = accident_clean_date, aes(x = date, y = accident_count)) +
+  geom_smooth(se = F, stat = "smooth") +
+  labs(title = "Accidents Across Years")
+
+plot_1
+
+plot_2 <- ggplot(data = accident_clean_date_severity, aes(x = date, y = accident_count)) +
+  geom_smooth(se = F, stat = "smooth") +
+  facet_grid(~accident_severity) +
+  labs(title = "Accidents Across Years Faceted by Severity")
+
+plot_2
+```
+
+```{r plot-2}
+
+accident_clean_light <- inner_join(accident_clean, accident_road_surface_conditions_raw, by = "road_surface_conditions") %>% 
+  filter(road_surface_conditions %in% c(1:7) & accident_severity == 3) %>% 
+  # mutate(accident_severity = factor(accident_severity, levels = c(1, 2, 3))) %>% 
+  mutate(year = year(date)) %>% 
+  # filter(year == 2017) %>% 
+  select(road_surface_conditions_description, year) %>% 
+  group_by(road_surface_conditions_description, year) %>% 
+  mutate(count = n()) %>% 
+  distinct()
+
+accident_clean_light_plot <- ggplot(data = accident_clean_light, aes(x = road_surface_conditions_description, y = count)) +
+  geom_col() + coord_flip() +
+  facet_wrap(~year)
+
+accident_clean_light_plot
+
+```
