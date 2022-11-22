@@ -1,0 +1,11 @@
+vehicle_direction_to,vehicle_direction_to_description
+0,Parked
+1,North
+2,North East
+3,East
+4,South East
+5,South East
+6,South West
+7,West
+8,North West
+9,unknown (self reported)

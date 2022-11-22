@@ -1,0 +1,8 @@
+first_point_of_impact,first_point_of_impact_description
+0,Did not impact
+1,Front
+2,Back
+3,Offside
+4,Nearside
+9,unknown (self reported)
+-1,Data missing or out of range
