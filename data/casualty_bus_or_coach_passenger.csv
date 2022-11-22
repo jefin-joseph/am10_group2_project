@@ -1,8 +1,0 @@
-bus_or_coach_passenger,bus_or_coach_passenger_description
-0,Not a bus or coach passenger
-1,Boarding
-2,Alighting
-3,Standing passenger
-4,Seated passenger
-9,unknown (self reported)
--1,Data missing or out of range
