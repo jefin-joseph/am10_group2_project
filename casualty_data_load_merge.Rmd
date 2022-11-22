@@ -1,0 +1,67 @@
+---
+title: "casualty_data_load_merge"
+author: "jefin joseph"
+date: "2022-11-22"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r casualty-col-desc-data-load}
+casualty_casualty_class_raw <- read_csv(here("data/casualty_casualty_class.csv")) %>% 
+  clean_names()
+
+casualty_sex_of_casualty_raw <- read_csv(here("data/casualty_sex_of_casualty.csv")) %>% 
+  clean_names()
+
+casualty_age_band_of_casualty_raw <- read_csv(here("data/casualty_age_band_of_casualty.csv")) %>% 
+  clean_names()
+
+casualty_casualty_severity_raw <- read_csv(here("data/casualty_casualty_severity.csv")) %>% 
+  clean_names()
+
+casualty_pedestrian_location_raw <- read_csv(here("data/casualty_pedestrian_location.csv")) %>% 
+  clean_names()
+
+casualty_pedestrian_movement_raw <- read_csv(here("data/casualty_pedestrian_movement.csv")) %>% 
+  clean_names()
+
+casualty_car_passenger_raw <- read_csv(here("data/casualty_car_passenger.csv")) %>% 
+  clean_names()
+
+casualty_bus_or_coach_passenger_raw <- read_csv(here("data/casualty_bus_or_coach_passenger.csv")) %>% 
+  clean_names()
+
+casualty_pedestrian_road_maintenance_worker_raw <- read_csv(here("data/casualty_pedestrian_road_maintenance_worker.csv")) %>% 
+  clean_names()
+
+casualty_casualty_type_raw <- read_csv(here("data/casualty_casualty_type.csv")) %>% 
+  clean_names()
+
+casualty_casualty_imd_decile_raw <- read_csv(here("data/casualty_casualty_imd_decile.csv")) %>% 
+  clean_names()
+
+casualty_casualty_home_area_type_raw <- read_csv(here("data/casualty_casualty_home_area_type.csv")) %>% 
+  clean_names()
+
+```
+
+```{r casualty-col-desc-data-merge}
+
+casualty_merged <- casualty_raw %>% 
+  inner_join(casualty_casualty_class_raw, by = "casualty_class") %>% 
+  inner_join(casualty_sex_of_casualty_raw, by = "sex_of_casualty") %>%
+  inner_join(casualty_age_band_of_casualty_raw, by = "age_band_of_casualty") %>%
+  inner_join(casualty_casualty_severity_raw, by = "casualty_severity") %>%
+  inner_join(casualty_pedestrian_location_raw, by = "pedestrian_location") %>%
+  inner_join(casualty_pedestrian_movement_raw, by = "pedestrian_movement") %>%
+  inner_join(casualty_car_passenger_raw, by = "car_passenger") %>%
+  inner_join(casualty_bus_or_coach_passenger_raw, by = "bus_or_coach_passenger") %>%
+  inner_join(casualty_pedestrian_road_maintenance_worker_raw, by = "pedestrian_road_maintenance_worker") %>%
+  inner_join(casualty_casualty_type_raw, by = "casualty_type") %>%
+  inner_join(casualty_casualty_imd_decile_raw, by = "casualty_imd_decile") %>%
+  inner_join(casualty_casualty_home_area_type_raw, by = "casualty_home_area_type")
+
+```
