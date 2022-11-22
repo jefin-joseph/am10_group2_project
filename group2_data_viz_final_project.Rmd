@@ -43,82 +43,425 @@ library(patchwork)
 
 ## Loading the data
 
-```{r load-data, warning = FALSE, message = FALSE}
+```{r load-accident-data, warning = FALSE, message = FALSE}
 accident_raw <- read_csv(here("data/dft-road-casualty-statistics-accident-last-5-years.csv")) %>% 
-  clean_names()
-
-casualty_raw <- read_csv(here("data/dft-road-casualty-statistics-casualty-last-5-years.csv")) %>% 
-  clean_names()
-
-vehicle_raw <- read_csv(here("data/dft-road-casualty-statistics-vehicle-last-5-years.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_police_force_raw <- read_csv(here("data/accident_police_force.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_accident_severity_raw <- read_csv(here("data/accident_accident_severity.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_day_of_week_raw <- read_csv(here("data/accident_day_of_week.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_local_authority_district_raw <- read_csv(here("data/accident_local_authority_district.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_local_authority_ons_district_raw <- read_csv(here("data/accident_local_authority_ons_district.csv")) %>%
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_local_authority_highway_raw <- read_csv(here("data/accident_local_authority_highway.csv")) %>%
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_first_road_class_raw <- read_csv(here("data/accident_first_road_class.csv")) %>% 
   clean_names()
 
 accident_road_type_raw <- read_csv(here("data/accident_road_type.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_junction_detail_raw <- read_csv(here("data/accident_junction_detail.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
+
+accident_junction_control_raw <- read_csv(here("data/accident_junction_control.csv")) %>% 
+  clean_names()%>%
+  distinct()
 
 accident_second_road_class_raw <- read_csv(here("data/accident_second_road_class.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_pedestrian_crossing_human_control_raw <- read_csv(here("data/accident_pedestrian_crossing_human_control.csv")) %>% 
   clean_names()
 
 accident_pedestrian_crossing_physical_facilities_raw <- read_csv(here("data/accident_pedestrian_crossing_physical_facilities.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_light_conditions_raw <- read_csv(here("data/accident_light_conditions.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
-accident_light_conditions_raw <- read_csv(here("data/accident_weather_conditions.csv")) %>% 
+accident_weather_conditions_raw <- read_csv(here("data/accident_weather_conditions.csv")) %>% 
   clean_names()
 
 accident_road_surface_conditions_raw <- read_csv(here("data/accident_road_surface_conditions.csv")) %>%
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_special_conditions_at_site_raw <- read_csv(here("data/accident_special_conditions_at_site.csv")) %>% 
   clean_names()
 
+accident_carriageway_hazards_raw <- read_csv(here("data/accident_carriageway_hazards.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
 accident_urban_or_rural_area_raw <- read_csv(here("data/accident_urban_or_rural_area.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_did_police_officer_attend_scene_of_accident_raw <- read_csv(here("data/accident_did_police_officer_attend_scene_of_accident.csv")) %>%
-  clean_names()
+  clean_names()%>%
+  distinct()
 
 accident_trunk_road_flag_raw <- read_csv(here("data/accident_trunk_road_flag.csv")) %>% 
-  clean_names()
+  clean_names()%>%
+  distinct()
 
+
+accident_clean <- accident_raw %>%
+  mutate(date = dmy(date), hour=hour(time), year=year(date),
+         month=month(date))%>%
+  
+  left_join(accident_police_force_raw, by="police_force")%>%
+  mutate(police_force_description=fct_reorder(police_force_description, police_force))%>%
+  
+  left_join(accident_accident_severity_raw, by="accident_severity")%>%
+  mutate(accident_severity_description=fct_reorder(accident_severity_description, accident_severity))%>%
+  
+  left_join(accident_day_of_week_raw, by="day_of_week")%>%
+  mutate(day_of_week_description=fct_reorder(day_of_week_description, day_of_week))%>%
+  
+  left_join(accident_local_authority_district_raw, by="local_authority_district")%>%
+  mutate(local_authority_district_description=fct_reorder(local_authority_district_description, local_authority_district))%>%
+  
+  left_join(accident_local_authority_ons_district_raw, by="local_authority_ons_district")%>%
+  mutate(local_authority_ons_district_description=fct_reorder(local_authority_ons_district_description, local_authority_ons_district))%>%
+  
+  left_join(accident_local_authority_highway_raw, by="local_authority_highway")%>%
+  mutate(local_authority_highway_description=fct_reorder(local_authority_highway_description, local_authority_highway))%>%
+  
+  left_join(accident_road_type_raw, by="road_type")%>%
+  mutate(road_type_description=fct_reorder(road_type_description, road_type))%>%
+  
+  left_join(accident_first_road_class_raw, by="first_road_class")%>%
+  mutate(first_road_class_description=fct_reorder(first_road_class_description, first_road_class))%>%
+  
+  left_join(accident_junction_detail_raw, by="junction_detail")%>%
+  mutate(junction_detail_description=fct_reorder(junction_detail_description, junction_detail))%>%
+  
+  left_join(accident_junction_control_raw, by="junction_control")%>%
+  mutate(junction_control_description=fct_reorder(junction_control_description, junction_control))%>%
+  
+  left_join(accident_second_road_class_raw, by="second_road_class")%>%
+  mutate(second_road_class_description=fct_reorder(second_road_class_description, second_road_class))%>%
+  
+  left_join(accident_pedestrian_crossing_human_control_raw, by="pedestrian_crossing_human_control")%>%
+  mutate(pedestrian_crossing_human_control_description=fct_reorder(pedestrian_crossing_human_control_description, pedestrian_crossing_human_control))%>%
+  
+  left_join(accident_pedestrian_crossing_physical_facilities_raw, by="pedestrian_crossing_physical_facilities")%>%
+  mutate(pedestrian_crossing_physical_facilities_description=fct_reorder(pedestrian_crossing_physical_facilities_description, pedestrian_crossing_physical_facilities))%>%
+  
+  left_join(accident_light_conditions_raw, by="light_conditions")%>%
+  mutate(light_conditions_description=fct_reorder(light_conditions_description, light_conditions))%>%
+  
+  left_join(accident_weather_conditions_raw, by="weather_conditions")%>%
+  mutate(weather_conditions_description=fct_reorder(weather_conditions_description, weather_conditions))%>%
+  
+  left_join(accident_road_surface_conditions_raw, by="road_surface_conditions")%>%
+  mutate(road_surface_conditions_description=fct_reorder(road_surface_conditions_description, road_surface_conditions))%>%
+  
+  left_join(accident_carriageway_hazards_raw, by="carriageway_hazards")%>%
+  mutate(carriageway_hazards_description=fct_reorder(carriageway_hazards_description, carriageway_hazards))%>%
+  
+  left_join(accident_urban_or_rural_area_raw, by="urban_or_rural_area")%>%
+  mutate(urban_or_rural_area_description=fct_reorder(urban_or_rural_area_description, urban_or_rural_area))%>%
+  
+  left_join(accident_special_conditions_at_site_raw, by="special_conditions_at_site")%>%
+  mutate(special_conditions_at_site_description=fct_reorder(special_conditions_at_site_description, special_conditions_at_site))%>%
+  
+  left_join(accident_trunk_road_flag_raw, by="trunk_road_flag")%>%
+  mutate(trunk_road_flag_description=fct_reorder(trunk_road_flag_description, trunk_road_flag))%>%
+  
+  left_join(accident_did_police_officer_attend_scene_of_accident_raw, by="did_police_officer_attend_scene_of_accident")%>%
+  mutate(did_police_officer_attend_scene_of_accident_description=fct_reorder(did_police_officer_attend_scene_of_accident_description, did_police_officer_attend_scene_of_accident))%>%
+  
+  mutate(speed_limit=factor(speed_limit))
+
+```
+
+```{r load-casualty-data, warning = FALSE, message = FALSE}
+casualty_raw <- read_csv(here("data/dft-road-casualty-statistics-casualty-last-5-years.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_casualty_class_raw <- read_csv(here("data/casualty_casualty_class.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_sex_of_casualty_raw <- read_csv(here("data/casualty_sex_of_casualty.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_age_band_of_casualty_raw <- read_csv(here("data/casualty_age_band_of_casualty.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_casualty_severity_raw <- read_csv(here("data/casualty_casualty_severity.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_pedestrian_location_raw <- read_csv(here("data/casualty_pedestrian_location.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_pedestrian_movement_raw <- read_csv(here("data/casualty_pedestrian_movement.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_car_passenger_raw <- read_csv(here("data/casualty_car_passenger.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_bus_or_coach_passenger_raw <- read_csv(here("data/casualty_bus_or_coach_passenger.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_pedestrian_road_maintenance_worker_raw <- read_csv(here("data/casualty_pedestrian_road_maintenance_worker.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_casualty_type_raw <- read_csv(here("data/casualty_casualty_type.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_casualty_imd_decile_raw <- read_csv(here("data/casualty_casualty_imd_decile.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+casualty_casualty_home_area_type_raw <- read_csv(here("data/casualty_casualty_home_area_type.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+
+casualty_clean <- casualty_raw %>% 
+  left_join(casualty_casualty_class_raw, by = "casualty_class") %>% 
+  mutate(casualty_class_description=fct_reorder(casualty_class_description, casualty_class))%>%
+  
+  left_join(casualty_sex_of_casualty_raw, by = "sex_of_casualty") %>%
+  mutate(sex_of_casualty_description=fct_reorder(sex_of_casualty_description, sex_of_casualty))%>%
+  
+  left_join(casualty_age_band_of_casualty_raw, by = "age_band_of_casualty") %>%
+  mutate(age_band_of_casualty_description=fct_reorder(age_band_of_casualty_description, age_band_of_casualty))%>%
+  
+  left_join(casualty_casualty_severity_raw, by = "casualty_severity") %>%
+  mutate(casualty_severity_description=fct_reorder(casualty_severity_description, casualty_severity))%>%
+  
+  left_join(casualty_pedestrian_location_raw, by = "pedestrian_location") %>%
+  mutate(pedestrian_location_description=fct_reorder(pedestrian_location_description, pedestrian_location))%>%
+  
+  left_join(casualty_pedestrian_movement_raw, by = "pedestrian_movement") %>%
+  mutate(pedestrian_movement_description=fct_reorder(pedestrian_movement_description, pedestrian_movement))%>%
+  
+  left_join(casualty_car_passenger_raw, by = "car_passenger") %>%
+  mutate(car_passenger_description=fct_reorder(car_passenger_description, car_passenger))%>%
+  
+  left_join(casualty_bus_or_coach_passenger_raw, by = "bus_or_coach_passenger") %>%
+  mutate(bus_or_coach_passenger_description=fct_reorder(bus_or_coach_passenger_description, bus_or_coach_passenger))%>%
+  
+  left_join(casualty_pedestrian_road_maintenance_worker_raw, by = "pedestrian_road_maintenance_worker") %>%
+  mutate(pedestrian_road_maintenance_worker_description=fct_reorder(pedestrian_road_maintenance_worker_description, pedestrian_road_maintenance_worker))%>%
+  
+  left_join(casualty_casualty_type_raw, by = "casualty_type") %>%
+  mutate(casualty_type_description=fct_reorder(casualty_type_description, casualty_type))%>%
+  
+  left_join(casualty_casualty_imd_decile_raw, by = "casualty_imd_decile") %>%
+  mutate(casualty_imd_decile_description=fct_reorder(casualty_imd_decile_description, casualty_imd_decile))%>%
+  
+  left_join(casualty_casualty_home_area_type_raw, by = "casualty_home_area_type")%>%
+  mutate(casualty_home_area_type_description=fct_reorder(casualty_home_area_type_description, casualty_home_area_type))
+```
+
+
+```{r load-vehicle-data, warning = FALSE, message = FALSE}
+vehicle_raw <- read_csv(here("data/dft-road-casualty-statistics-vehicle-last-5-years.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+
+vehicle_vehicle_type_raw <- read_csv(here("data/vehicle_vehicle_type.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_towing_and_articulation_raw <- read_csv(here("data/vehicle_towing_and_articulation.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_vehicle_manoeuvre_raw <- read_csv(here("data/vehicle_vehicle_manoeuvre.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_vehicle_direction_from_raw <- read_csv(here("data/vehicle_vehicle_direction_from.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_vehicle_direction_to_raw <- read_csv(here("data/vehicle_vehicle_direction_to.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_vehicle_location_restricted_lane_raw <- read_csv(here("data/vehicle_vehicle_location_restricted_lane.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_junction_location_raw <- read_csv(here("data/vehicle_junction_location.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_skidding_and_overturning_raw <- read_csv(here("data/vehicle_skidding_and_overturning.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_hit_object_in_carriageway_raw <- read_csv(here("data/vehicle_hit_object_in_carriageway.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_vehicle_leaving_carriageway_raw <- read_csv(here("data/vehicle_vehicle_leaving_carriageway.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_hit_object_off_carriageway_raw <- read_csv(here("data/vehicle_hit_object_off_carriageway.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_first_point_of_impact_raw <- read_csv(here("data/vehicle_first_point_of_impact.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_vehicle_left_hand_drive_raw <- read_csv(here("data/vehicle_vehicle_left_hand_drive.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_journey_purpose_of_driver_raw <- read_csv(here("data/vehicle_journey_purpose_of_driver.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_sex_of_driver_raw <- read_csv(here("data/vehicle_sex_of_driver.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_age_band_of_driver_raw <- read_csv(here("data/vehicle_age_band_of_driver.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_propulsion_code_raw <- read_csv(here("data/vehicle_propulsion_code.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_driver_imd_decile_raw <- read_csv(here("data/vehicle_driver_imd_decile.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+vehicle_driver_home_area_type_raw <- read_csv(here("data/vehicle_driver_home_area_type.csv")) %>% 
+  clean_names()%>%
+  distinct()
+
+
+vehicle_clean <- vehicle_raw%>% 
+  left_join(vehicle_vehicle_type_raw, by = "vehicle_type") %>%
+  mutate(vehicle_type_description=fct_reorder(vehicle_type_description, vehicle_type))%>%
+  
+  left_join(vehicle_towing_and_articulation_raw, by = "towing_and_articulation") %>% 
+  mutate(towing_and_articulation_description=fct_reorder(towing_and_articulation_description, towing_and_articulation))%>%
+  
+  left_join(vehicle_vehicle_manoeuvre_raw, by = "vehicle_manoeuvre") %>% 
+  mutate(vehicle_manoeuvre_description=fct_reorder(vehicle_manoeuvre_description, vehicle_manoeuvre))%>%
+  
+  left_join(vehicle_vehicle_direction_from_raw, by = "vehicle_direction_from") %>% 
+  mutate(vehicle_direction_from_description=fct_reorder(vehicle_direction_from_description, vehicle_direction_from))%>%
+  
+  left_join(vehicle_vehicle_direction_to_raw, by = "vehicle_direction_to") %>% 
+  mutate(vehicle_direction_to_description=fct_reorder(vehicle_direction_to_description, vehicle_direction_to))%>%
+  
+  left_join(vehicle_vehicle_location_restricted_lane_raw, by = "vehicle_location_restricted_lane") %>% 
+  mutate(vehicle_location_restricted_lane_description=fct_reorder(vehicle_location_restricted_lane_description, vehicle_location_restricted_lane))%>%
+  
+  left_join(vehicle_junction_location_raw, by = "junction_location") %>% 
+  mutate(junction_location_description=fct_reorder(junction_location_description, junction_location))%>%
+  
+  left_join(vehicle_skidding_and_overturning_raw, by = "skidding_and_overturning") %>% 
+  mutate(skidding_and_overturning_description=fct_reorder(skidding_and_overturning_description, skidding_and_overturning))%>%
+  
+  left_join(vehicle_hit_object_in_carriageway_raw, by = "hit_object_in_carriageway") %>% 
+  mutate(hit_object_in_carriageway_description=fct_reorder(hit_object_in_carriageway_description, hit_object_in_carriageway))%>%
+  
+  left_join(vehicle_vehicle_leaving_carriageway_raw, by = "vehicle_leaving_carriageway") %>% 
+  mutate(vehicle_leaving_carriageway_description=fct_reorder(vehicle_leaving_carriageway_description, vehicle_leaving_carriageway))%>%
+  
+  left_join(vehicle_hit_object_off_carriageway_raw, by = "hit_object_off_carriageway") %>% 
+  mutate(hit_object_off_carriageway_description=fct_reorder(hit_object_off_carriageway_description, hit_object_off_carriageway))%>%
+  
+  left_join(vehicle_first_point_of_impact_raw, by = "first_point_of_impact") %>% 
+  mutate(first_point_of_impact_description=fct_reorder(hit_object_off_carriageway_description, hit_object_off_carriageway))%>%
+  
+  left_join(vehicle_vehicle_left_hand_drive_raw, by = "vehicle_left_hand_drive") %>% 
+  mutate(vehicle_left_hand_drive_description=fct_reorder(vehicle_left_hand_drive_description, vehicle_left_hand_drive))%>%
+  
+  left_join(vehicle_journey_purpose_of_driver_raw, by = "journey_purpose_of_driver") %>% 
+  mutate(journey_purpose_of_driver_description=fct_reorder(journey_purpose_of_driver_description, journey_purpose_of_driver))%>%
+  
+  left_join(vehicle_sex_of_driver_raw, by = "sex_of_driver") %>%
+  mutate(sex_of_driver_description=fct_reorder(sex_of_driver_description, sex_of_driver))%>%
+  
+  left_join(vehicle_age_band_of_driver_raw, by = "age_band_of_driver") %>% 
+  mutate(age_band_of_driver_description=fct_reorder(age_band_of_driver_description, age_band_of_driver))%>%
+  
+  left_join(vehicle_propulsion_code_raw, by = "propulsion_code") %>%
+  mutate(propulsion_code_description=fct_reorder(propulsion_code_description, propulsion_code))%>%
+  
+  left_join(vehicle_driver_imd_decile_raw, by = "driver_imd_decile") %>% 
+  mutate(driver_imd_decile_description=fct_reorder(driver_imd_decile_description, driver_imd_decile))%>%
+  
+  left_join(vehicle_driver_home_area_type_raw, by = "driver_home_area_type")%>%
+  mutate(driver_home_area_type_description=fct_reorder(driver_home_area_type_description, driver_home_area_type))
+```
+
+```{r merge-datasets, warning = FALSE, message = FALSE}
+
+merged_ds<-casualty_clean%>%
+  inner_join(vehicle_clean, by=c("accident_index", "vehicle_reference"))%>%
+  inner_join(accident_clean, by="accident_index")
+
+casualty_clean%>%
+  select(accident_index)%>%
+  n_distinct()
+
+accident_clean%>%
+  select(accident_index)%>%
+  n_distinct()
+
+vehicle_clean%>%
+  select(accident_index)%>%
+  n_distinct()
 ```
 
 ## ICE-ing the data
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
 
 ```{r inspect-data, warning = FALSE, message = FALSE}
-skim(accident_raw)
-skim(casualty_raw)
-skim(vehicle_raw)
+skim(accident_clean)
+skim(casualty_clean)
+skim(vehicle_clean)
+skim(merged_ds)
 ```
 
 ```{r clean-data, warning = FALSE, message = FALSE}
@@ -138,10 +481,12 @@ skim(vehicle_raw)
 #          junction_control = factor(junction_control),
 #          
 #          )
+ 
 
-accident_clean <- accident_raw %>% 
-  filter(is.na(date) == F) %>% 
-  mutate(date = dmy(date))
+
+  
+
+         
 
 accident_clean_date <- accident_clean %>%
   group_by(date) %>% 
@@ -161,19 +506,111 @@ accident_clean_date_severity <- accident_clean %>%
 
 ```{r plot-1-2}
 
-plot_1 <- ggplot(data = accident_clean_date, aes(x = date, y = accident_count)) +
-  geom_smooth(se = F, stat = "smooth") +
-  labs(title = "Accidents Across Years")
+accident_clean%>%
+  group_by(hour)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=hour, y=perc_fatal))+geom_line()
 
-plot_1
 
-plot_2 <- ggplot(data = accident_clean_date_severity, aes(x = date, y = accident_count)) +
-  geom_smooth(se = F, stat = "smooth") +
-  facet_grid(~accident_severity) +
-  labs(title = "Accidents Across Years Faceted by Severity")
+accident_clean%>%
+  group_by(day_of_week_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=day_of_week_description, y=perc_fatal))+geom_col()+   geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, vjust=-0.5, position = position_dodge(.9))+
+        scale_y_continuous(labels=scales::percent)
 
-plot_2
+
+accident_clean%>%
+  group_by(first_road_class_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=first_road_class_description, y=perc_fatal))+geom_col()+   geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, vjust=-0.5, position = position_dodge(.9))+
+        scale_y_continuous(labels=scales::percent)
+
+
+accident_clean%>%
+  group_by(road_type_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=perc_fatal, y=road_type_description))+geom_col()+   geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, hjust=-0.5, position = position_dodge(.9))+
+        scale_x_continuous(labels=scales::percent, limits=c(0, 0.02))
+
+
+accident_clean%>%
+  filter(speed_limit!=-1, road_type_description!="Unknown" & road_type_description!="One way street")%>%
+  group_by(speed_limit, road_type_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=perc_fatal, y=speed_limit))+geom_col()+facet_wrap(~road_type_description)+  geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, hjust=-0.5)+
+        scale_x_continuous(labels=scales::percent, limits=c(0, 0.05))
+
+
+accident_clean%>%
+  group_by(junction_detail_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=perc_fatal, y=junction_detail_description))+geom_col()+  geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, hjust=-0.5)+
+        scale_x_continuous(labels=scales::percent, limits=c(0, 0.05))
+
+
+accident_clean%>%
+  group_by(junction_control_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=perc_fatal, y=junction_control_description))+geom_col()+  geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, hjust=-0.5)+
+        scale_x_continuous(labels=scales::percent, limits=c(0, 0.05))
+
+
+accident_clean%>%
+  group_by(weather_conditions_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=perc_fatal, y=weather_conditions_description))+geom_col()+  geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, hjust=-0.5)+
+        scale_x_continuous(labels=scales::percent, limits=c(0, 0.05))
+
+accident_clean%>%
+  group_by(urban_or_rural_area_description)%>%
+  summarize(perc_fatal=sum(ifelse(accident_severity==1, 1, 0))/n())%>%
+  ggplot(aes(x=perc_fatal, y=urban_or_rural_area_description))+geom_col()+  geom_text(aes(label=scales::percent(perc_fatal))
+                  ,size=3, hjust=-0.5)+
+        scale_x_continuous(labels=scales::percent, limits=c(0, 0.05))
+
 ```
+```{r map-2}
+
+uk_wards_sf <- read_sf(here::here("data","Police_Force_Areas_(Dec_2021)_EW_BFC.shp"))
+
+accident_clean_v2<-accident_clean%>%
+  filter(is.na(longitude)==FALSE, is.na(latitude)==FALSE)
+
+accident_clean_sf <-  st_as_sf(accident_clean_v2, 
+                              coords=c('longitude', 'latitude'), 
+                              crs = 4326)
+
+st_geometry(accident_clean_sf)
+st_geometry(uk_wards) # what is the geometry ?
+# london_wards_sf = projected CRS:  OSGB 1936 / British National Grid
+
+# change the CRS to use WGS84 lng/lat pairs
+  <-  uk_wards_sf %>% 
+  st_transform(4326) # transform CRS to WGS84, latitude/longitude
+
+st_geometry(uk_wards_WGS84)
+
+uk_wards_WGS84_v2 <- uk_wards_WGS84 %>%
+  mutate(count = lengths(st_contains(uk_wards_WGS84, 
+                accident_clean_sf)),
+    count_fatal=lengths(st_contains(uk_wards_WGS84, 
+                accident_clean_sf%>%filter(accident_severity==1))))
+
+uk_wards_WGS84_v2 <-uk_wards_WGS84_v2%>%
+  mutate(perc_fatal=count_fatal/count)
+
+ggplot() +
+  geom_sf(data = uk_wards_WGS84_v2, aes(fill=perc_fatal))+
+  scale_fill_gradient(low = "#E1ECF7", high = "#08306B", name="Percentage fatal accidents")
+```
+
 
 ```{r plot-2}
 
