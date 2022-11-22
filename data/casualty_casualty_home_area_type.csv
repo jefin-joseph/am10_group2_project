@@ -1,0 +1,5 @@
+casualty_home_area_type,casualty_home_area_type_description
+1,Urban area
+2,Small town
+3,Rural
+-1,Data missing or out of range

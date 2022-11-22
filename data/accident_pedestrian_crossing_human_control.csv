@@ -1,0 +1,6 @@
+pedestrian_crossing_human_control,pedestrian_crossing_human_control_description
+0,None within 50 metres 
+1,Control by school crossing patrol
+2,Control by other authorised person
+-1,Data missing or out of range
+9,unknown (self reported)
